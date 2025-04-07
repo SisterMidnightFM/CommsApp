@@ -11,7 +11,7 @@ This is a simple web-based tool that allows users to upload an image, overlay a 
 
 ## How to Use
 
-1. Open `App V9.html` in any modern web browser.
+1. Download the HTML file into a new folder on your computer and and then open it in any modern web browser.
 2. Save a template image in the same folder as template.png. Make sure it is 1080x1350px.
 3. You can change the font by saving a font in the same folder as font.otf
 4. The PNG overlay will be added automatically.
