@@ -121,7 +121,7 @@
             display: inline-block;
             margin-left: 10px;
             font-size: 14px;
-            color: #666;
+            color: #383838;
             width: 50px;
         }
     </style>
@@ -485,39 +485,38 @@
             // Draw show name text with wrapping
             if (settings.showName) {
                 const maxWidth = 330; // Maximum width for the text line
-                const lineHeight = settings.textSize * 1.2; // Line height based on text size
+                const lineHeight = settings.textSize * 1.6; // Line height based on text size
                 
                 wrapText(ctx, settings.showName, 20, 1125, maxWidth, lineHeight);
             }
             
             
             
-                        // Draw show date text on two lines
-            if (settings.showDate) {
-                // Parse the date string into components
-                const date = new Date(document.getElementById('showDate').value);
-                
-                // Format time for first line (4:00pm)
-                const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
-                const timeLine = date.toLocaleTimeString('en-US', timeOptions);
-                
-                // Format date for second line (Sat, 12th April 2025)
-                const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-                const day = date.getDate();
-                const month = date.toLocaleDateString('en-US', { month: 'long' });
-                const year = date.getFullYear();
-                
-                // Add ordinal suffix to day (1st, 2nd, 3rd, etc.)
-                const ordinal = getOrdinalSuffix(day);
-                
-                const dateLine = `${dayName}, ${day}${ordinal} ${month} ${year}`;
-                
-                // Render time on first line
-                ctx.fillText(timeLine, 700, 1125);
-                
-                // Render date on second line
-                ctx.fillText(dateLine, 700, 1125 + settings.textSize * 1.2);
-            }
+                if (settings.showDate) {
+        const date = new Date(document.getElementById('showDate').value);
+        
+        // Format time with hour and minute (e.g., "4:00 PM")
+        const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
+        let timeLine = date.toLocaleTimeString('en-US', timeOptions).toLowerCase();
+
+        // Get weekday short name (e.g., "Sat")
+        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+
+        // Combine time and weekday
+        timeLine = `${timeLine} ${dayName}`;
+
+        // Build second line: 12th April 2025
+        const day = date.getDate();
+        const ordinal = getOrdinalSuffix(day);
+        const month = date.toLocaleDateString('en-US', { month: 'long' });
+        const year = date.getFullYear();
+        const dateLine = `${day}${ordinal} ${month} ${year}`;
+
+        // Render both lines
+        ctx.fillText(timeLine, 720, 1125);
+        ctx.fillText(dateLine, 720, 1125 + settings.textSize * 1.6);
+    }
+
         }
 
         // Function to wrap text
