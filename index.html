@@ -3,133 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMFM Instagram Comms App V1.1</title>
-    <style>
-        /* Global styles */
-        @font-face {
-            font-family: 'CustomFont';
-            src: url('font.otf') format('opentype');
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-        }
-
-        .app-container {
-            display: flex;
-            height: 100vh;
-        }
-
-        /* Header styles */
-        header {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 15px 0;
-            font-size: 24px;
-        }
-
-        /* Controls panel (left side) */
-        .controls-panel {
-            flex: 1;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
-        }
-
-        /* Preview panel (right side) */
-        .preview-panel {
-            flex: 2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #e0e0e0;
-            overflow: hidden;
-        }
-
-        /* Stage styles */
-        .stage {
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .stage-title {
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        /* Input styles */
-        input, button, select {
-            margin: 8px 0;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        label {
-            display: block;
-            margin: 8px 0 4px;
-        }
-
-        input[type="range"] {
-            width: 100%;
-        }
-
-        input[type="text"], input[type="datetime-local"] {
-            width: 95%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        /* Canvas container */
-        .canvas-container {
-            position: relative;
-            max-width: 100%;
-            max-height: 100%;
-            cursor: move; /* Show move cursor when hovering over canvas */
-        }
-
-        /* Canvas styling */
-        canvas {
-            max-width: 100%;
-            max-height: 90vh;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Range value display */
-        .range-value {
-            display: inline-block;
-            margin-left: 10px;
-            font-size: 14px;
-            color: #383838;
-            width: 50px;
-        }
-    </style>
+    <title>SMFM Instagram Comms App V2.0</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Main header -->
     <header>
-        SMFM Instagram Comms App V1.1
+        SMFM Instagram Comms App V2.0
     </header>
 
     <!-- App container with split layout -->
@@ -143,6 +23,13 @@
                 <p>Image will be automatically resized to 1080px × 1350px - 4:5 aspect ratio </p>
             </div>
 
+            <!-- Add buttons for selecting template color -->
+            <div class="stage" id="stageTemplate">
+                <div class="stage-title">Select Template Colour</div>
+                <button id="whiteTemplateBtn">White</button>
+                <button id="blackTemplateBtn">Black</button>
+            </div>
+            
             <!-- Stage 2: Adjust Image -->
             <div class="stage" id="stage2">
                 <div class="stage-title">Stage 2: Adjust Image</div>
@@ -169,6 +56,12 @@
                 
                 <label for="textSizeSlider">Text Size: <span id="textSizeValue" class="range-value">33pt</span></label>
                 <input type="range" id="textSizeSlider" min="10" max="50" value="33">
+                
+                <label for="tag1">Tag 1 (max 20 characters):</label>
+                <input type="text" id="tag1" placeholder="Enter first tag" maxlength="15">
+                
+                <label for="tag2">Tag 2 (max 20 characters):</label>
+                <input type="text" id="tag2" placeholder="Enter second tag" maxlength="15">
             </div>
 
             <!-- Stage 4: Export -->
@@ -213,7 +106,10 @@
             yPos: 0,
             showName: '',
             showDate: '',
-            textSize: 33 // Default text size
+            textSize: 33, // Default text size
+            fontColor: 'white', // Default font color
+            tag1: '',
+            tag2: ''
         };
 
         // Set initial datetime value to current date and time
@@ -226,7 +122,7 @@
         document.getElementById('showDate').value = `${year}-${month}-${day}T${hours}:${minutes}`;
 
         // Load template image on startup
-        loadTemplateImage();
+        loadTemplateImage('template_white.png');
 
         // STAGE 1: Image Upload logic
         document.getElementById('imageUpload').addEventListener('change', function(e) {
@@ -288,6 +184,17 @@
             redrawCanvas();
         });
 
+        // Tag input logic
+        document.getElementById('tag1').addEventListener('input', function(e) {
+            settings.tag1 = e.target.value;
+            redrawCanvas();
+        });
+
+        document.getElementById('tag2').addEventListener('input', function(e) {
+            settings.tag2 = e.target.value;
+            redrawCanvas();
+        });
+
         // STAGE 4: Export logic
         document.getElementById('exportBtn').addEventListener('click', function() {
             try {
@@ -330,18 +237,29 @@
             }
         });
 
-        // Function to load template image
-        function loadTemplateImage() {
+        // Add event listeners for template selection buttons
+        document.getElementById('whiteTemplateBtn').addEventListener('click', function() {
+            loadTemplateImage('template_white.png');
+            settings.fontColor = 'white'; // Set font color to white
+            redrawCanvas(); // Redraw the canvas with the updated font color
+        });
+
+        document.getElementById('blackTemplateBtn').addEventListener('click', function() {
+            loadTemplateImage('template_black.png');
+            settings.fontColor = 'black'; // Set font color to black
+            redrawCanvas(); // Redraw the canvas with the updated font color
+        });
+
+        // Function to load the template image
+        function loadTemplateImage(templateSrc) {
             templateImage = new Image();
-            // Remove the crossOrigin attribute
             templateImage.onload = function() {
-                // Redraw canvas once template is loaded
                 redrawCanvas();
             };
-            templateImage.src = 'template.png';
+            templateImage.src = templateSrc;
             templateImage.onerror = function(e) {
                 console.error('Error loading template image:', e);
-                alert('Could not load the template image. Make sure "template.png" exists in the app folder.');
+                alert(`Could not load the template image: ${templateSrc}. Make sure it exists in the app folder.`);
             };
         }
 
@@ -423,103 +341,139 @@
             document.getElementById('fileName').value = fileName;
         }
 
+        // Function to draw a tag box with text
+        function drawTagBox(text, x, y) {
+            if (!text) return;
+
+            // Set font for measuring text
+            ctx.font = '24pt Font2'; // Ensure this matches the rendering font
+
+            // Measure the transformed text
+            const transformedText = text.toUpperCase();
+            const metrics = ctx.measureText(transformedText);
+            const textWidth = metrics.width + 5; // Add a buffer of 10 pixels
+            const textHeight = 24; // Approximate height in points
+
+            // Box padding
+            const paddingX = 20;
+            const paddingY = 12;
+
+            // Calculate box dimensions
+            const boxWidth = textWidth + paddingX * 2;
+            const boxHeight = textHeight + paddingY * 2;
+
+            // Draw the box border
+            ctx.strokeStyle = settings.fontColor || 'white';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x, y - boxHeight / 2, boxWidth, boxHeight);
+
+            // Draw the text
+            ctx.fillStyle = settings.fontColor || 'white';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(transformedText, x + paddingX, y);
+        }
+
         // Main function to redraw the canvas with all current settings
         function redrawCanvas() {
             // Clear the canvas
             ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-            
+
             // Background fill (in case image doesn't cover canvas)
             ctx.fillStyle = '#000000';
             ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-            
+
             // Draw user image if available
             if (userImage) {
-                // Calculate zoom factor (convert percentage to decimal)
                 const zoomFactor = 1 + (settings.zoom / 100);
-                
-                // Get image dimensions
                 const imgWidth = userImage.width;
                 const imgHeight = userImage.height;
-                
-                // Calculate dimensions to maintain aspect ratio
                 let drawWidth, drawHeight;
                 const canvasRatio = CANVAS_WIDTH / CANVAS_HEIGHT;
                 const imgRatio = imgWidth / imgHeight;
-                
+
                 if (imgRatio > canvasRatio) {
-                    // Image is wider than canvas ratio
                     drawWidth = CANVAS_WIDTH * zoomFactor;
                     drawHeight = drawWidth / imgRatio;
                 } else {
-                    // Image is taller than canvas ratio
                     drawHeight = CANVAS_HEIGHT * zoomFactor;
                     drawWidth = drawHeight * imgRatio;
                 }
-                
-                // Calculate positioning with offsets
-                const xOffset = (CANVAS_WIDTH - drawWidth) / 2 + settings.xPos * 5; // Multiplied for more movement
+
+                const xOffset = (CANVAS_WIDTH - drawWidth) / 2 + settings.xPos * 5;
                 const yOffset = (CANVAS_HEIGHT - drawHeight) / 2 + settings.yPos * 5;
-                
-                // Draw the user image with current settings
+
                 ctx.drawImage(userImage, xOffset, yOffset, drawWidth, drawHeight);
             } else {
-                // If no user image, draw a placeholder
                 ctx.fillStyle = '#eeeeee';
                 ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
                 ctx.fillStyle = '#999999';
-                ctx.font = '24px Arial';
+                ctx.font = '24px Font2';
                 ctx.textAlign = 'center';
-                ctx.fillText('Upload an image to get started', CANVAS_WIDTH/2, CANVAS_HEIGHT/2);
+                ctx.fillText('Upload an image to get started', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
             }
-            
+
             // Draw template image on top
             if (templateImage) {
                 ctx.drawImage(templateImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             }
-            
-            // Set font for text overlay - using white color and custom size
-            ctx.font = `${settings.textSize}pt CustomFont, Arial`;
-            ctx.fillStyle = 'white';
-            ctx.textAlign = 'left';
-            
+
+            // Set font for text overlay - using dynamic font color and custom size
+            ctx.font = `${settings.textSize}pt CustomFont`;
+            ctx.fillStyle = settings.fontColor || 'white'; // Default to white if not set
+            ctx.textAlign = 'center';
+
             // Draw show name text with wrapping
             if (settings.showName) {
-                const maxWidth = 330; // Maximum width for the text line
-                const lineHeight = settings.textSize * 1.6; // Line height based on text size
-                
-                wrapText(ctx, settings.showName, 60, 1125, maxWidth, lineHeight);
+                const maxWidth = 800;
+                const lineHeight = settings.textSize * 1.6;
+                const centerY = 1100;
+                const showNameUpperCase = settings.showName.toUpperCase();
+                wrapText(ctx, showNameUpperCase, CANVAS_WIDTH / 2, centerY, maxWidth, lineHeight);
             }
-            
-            
-            
-                if (settings.showDate) {
-    const date = new Date(document.getElementById('showDate').value);
 
-    // Get weekday short name (e.g., "Sat")
-    const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+            // Draw show date text
+            if (settings.showDate) {
+                const date = new Date(document.getElementById('showDate').value);
+                const timeOptions = { hour: 'numeric', hour12: true };
+                const time = date.toLocaleTimeString('en-US', timeOptions).toLowerCase();
+                const dayName = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = String(date.getFullYear()).slice(-2);
+                const formattedDate = `${day}.${month}.${year}`;
 
-    // Format time with hour and minute (e.g., "4:00 PM")
-    const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
-    const time = date.toLocaleTimeString('en-US', timeOptions).toLowerCase();
+                const rightMargin = 50;
+                const timeX = CANVAS_WIDTH - rightMargin;
+                const timeY = 1191;
+                const dayNameX = CANVAS_WIDTH - rightMargin;
+                const dayNameY = timeY + 42;
+                const dateX = CANVAS_WIDTH - rightMargin;
+                const dateY = dayNameY + 42;
 
-    // Combine day and time (e.g., "Sat 4:00 PM")
-    const timeLine = `${dayName} ${time}`;
+                ctx.font = `28pt Font2`;
+                ctx.fillStyle = settings.fontColor || 'white'; // Default to white if not set
+                ctx.textAlign = 'right';
 
-    // Build second line: 12th April 2025
-    const day = date.getDate();
-    const ordinal = getOrdinalSuffix(day);
-    const month = date.toLocaleDateString('en-US', { month: 'long' });
-    const year = date.getFullYear();
-    const dateLine = `${day}${ordinal} ${month} ${year}`;
+                ctx.fillText(time, timeX, timeY);
+                ctx.fillText(dayName, dayNameX, dayNameY);
+                ctx.fillText(formattedDate, dateX, dateY);
+            }
 
-    // Set text alignment to right
-    ctx.textAlign = 'right';
+            // Draw tags
+            const leftMargin = 30;
+            const tagXOffset = 12; // Horizontal offset for tags
+            const tagY = 1200; // Base Y position for Tag 1
+            const tagSpacing = 60; // Vertical spacing between tags
 
-    // Render both lines aligned to the right
-    ctx.fillText(timeLine, CANVAS_WIDTH - 50, 1125); // Adjust padding as needed
-    ctx.fillText(dateLine, CANVAS_WIDTH - 50, 1125 + settings.textSize * 1.6);
-}
+            if (settings.tag1) {
+                drawTagBox(settings.tag1, leftMargin + tagXOffset, tagY); // Draw Tag 1
+            }
 
+            if (settings.tag2) {
+                const tag2Y = tagY + tagSpacing; // Position Tag 2 below Tag 1
+                drawTagBox(settings.tag2, leftMargin + tagXOffset, tag2Y); // Draw Tag 2
+            }
         }
 
         // Function to wrap text
@@ -556,9 +510,14 @@
             ctx.fillStyle = '#eeeeee';
             ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             ctx.fillStyle = '#999999';
-            ctx.font = '24px Arial';
+            ctx.font = '24px Font2';
             ctx.textAlign = 'center';
-            ctx.fillText('Upload an image to get started', CANVAS_WIDTH/2, CANVAS_HEIGHT/2);
+            ctx.fillText('Upload an image to get started', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+
+            // Ensure the text size is applied during initialization
+            document.getElementById('textSizeSlider').value = settings.textSize;
+            document.getElementById('textSizeValue').textContent = settings.textSize + 'pt';
+            redrawCanvas(); // Redraw the canvas with the correct font size
         }
 
         // Initialize the canvas when the page loads
@@ -605,8 +564,8 @@
             const scaleFactor = getCanvasScaleFactor();
             
             // Update the position with scaled movement
-            settings.xPos += deltaX / 5 * -1; // Invert for natural feeling
-            settings.yPos += deltaY / 5 * -1; // Invert for natural feeling
+            settings.xPos += deltaX / scaleFactor; // Remove inversion
+            settings.yPos += deltaY / scaleFactor; // Remove inversion
             
             // Clamp position values
             settings.xPos = Math.max(-100, Math.min(100, settings.xPos));
@@ -643,15 +602,15 @@
         });
 
         // Helper function to get ordinal suffix (1st, 2nd, 3rd, etc.)
-function getOrdinalSuffix(day) {
-    if (day > 3 && day < 21) return 'th';
-    switch (day % 10) {
-        case 1: return 'st';
-        case 2: return 'nd';
-        case 3: return 'rd';
-        default: return 'th';
-    }
-}
+        function getOrdinalSuffix(day) {
+            if (day > 3 && day < 21) return 'th';
+            switch (day % 10) {
+                case 1: return 'st';
+                case 2: return 'nd';
+                case 3: return 'rd';
+                default: return 'th';
+            }
+        }
     </script>
 </body>
 </html>

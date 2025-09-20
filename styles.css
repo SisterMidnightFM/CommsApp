@@ -1,0 +1,124 @@
+/* Global styles */
+@font-face {
+    font-family: 'CustomFont';
+    src: url('font.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Font2';
+    src: url('Font2.otf') format('opentype');
+}
+
+body {
+    font-family: Font2, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+.app-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Header styles */
+header {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 24px;
+}
+
+/* Controls panel (left side) */
+.controls-panel {
+    flex: 1;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+}
+
+/* Preview panel (right side) */
+.preview-panel {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e0e0e0;
+    overflow: hidden;
+}
+
+/* Stage styles */
+.stage {
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stage-title {
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* Input styles */
+input, button, select {
+    margin: 8px 0;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+label {
+    display: block;
+    margin: 8px 0 4px;
+}
+
+input[type="range"] {
+    width: 100%;
+}
+
+input[type="text"], input[type="datetime-local"] {
+    width: 95%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Canvas container */
+.canvas-container {
+    position: relative;
+    max-width: 100%;
+    max-height: 100%;
+    cursor: move; /* Show move cursor when hovering over canvas */
+}
+
+/* Canvas styling */
+canvas {
+    max-width: 100%;
+    max-height: 90vh;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Range value display */
+.range-value {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 14px;
+    color: #383838;
+    width: 50px;
+}
