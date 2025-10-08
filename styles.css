@@ -37,6 +37,7 @@ header {
     background-color: #fff;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* Preview panel (right side) */

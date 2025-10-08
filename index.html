@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMFM Instagram Comms App V2.0</title>
+    <title>SMFM Instagram Comms App V2.1</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="favicon.png" type="image/x-icon">
 </head>
 <body>
     <!-- Main header -->
     <header>
-        SMFM Instagram Comms App V2.0
+        SMFM Instagram Comms App V2.1
     </header>
 
     <!-- App container with split layout -->
@@ -54,14 +54,25 @@
                 
                 <label for="showDate">Show Date:</label>
                 <input type="datetime-local" id="showDate">
-                
+
+                <label for="showLength">Show Length:</label>
+                <select id="showLength">
+                    <option value="">Select duration (optional)</option>
+                    <option value="30">30 minutes</option>
+                    <option value="60">1 hour</option>
+                    <option value="90">1 hour 30 minutes</option>
+                    <option value="120">2 hours</option>
+                    <option value="150">2 hours 30 minutes</option>
+                    <option value="180">3 hours</option>
+                </select>
+
                 <label for="textSizeSlider">Text Size: <span id="textSizeValue" class="range-value">33pt</span></label>
                 <input type="range" id="textSizeSlider" min="10" max="50" value="33">
                 
-                <label for="tag1">Tag 1 (max 20 characters):</label>
+                <label for="tag1">Genre/Vibe 1:</label>
                 <input type="text" id="tag1" placeholder="Enter first tag" maxlength="15">
                 
-                <label for="tag2">Tag 2 (max 20 characters):</label>
+                <label for="tag2">Genre/Vibe 2:</label>
                 <input type="text" id="tag2" placeholder="Enter second tag" maxlength="15">
             </div>
 
@@ -87,19 +98,18 @@
         // Global variables
         const canvas = document.getElementById('previewCanvas');
         const ctx = canvas.getContext('2d');
-        
-        // Standard Instagram size
-        const CANVAS_WIDTH = 1080;
-        const CANVAS_HEIGHT = 1350;
-        
-        // Set initial canvas dimensions
-        canvas.width = CANVAS_WIDTH;
-        canvas.height = CANVAS_HEIGHT;
-        
+
+        // Configuration object - will be loaded from config.json
+        let config = null;
+
+        // Standard Instagram size (fallback defaults)
+        let CANVAS_WIDTH = 1080;
+        let CANVAS_HEIGHT = 1350;
+
         // Image holders
         let userImage = null;
         let templateImage = null;
-        
+
         // Current settings
         const settings = {
             zoom: 0,
@@ -107,23 +117,81 @@
             yPos: 0,
             showName: '',
             showDate: '',
-            textSize: 33, // Default text size
-            fontColor: 'white', // Default font color
+            showLength: '', // Show duration in minutes
+            textSize: 33, // Default text size - will be updated from config
+            fontColor: 'white', // Default font color - will be updated from config
             tag1: '',
             tag2: ''
         };
 
-        // Set initial datetime value to current date and time
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        document.getElementById('showDate').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        // Load configuration file and initialize app
+        async function loadConfig() {
+            try {
+                // Add cache busting to ensure fresh config is loaded
+                const response = await fetch('config.json?v=' + Date.now());
+                config = await response.json();
 
-        // Load template image on startup
-        loadTemplateImage('template_white.png');
+                // Update canvas dimensions from config
+                CANVAS_WIDTH = config.canvas.width;
+                CANVAS_HEIGHT = config.canvas.height;
+                canvas.width = CANVAS_WIDTH;
+                canvas.height = CANVAS_HEIGHT;
+
+                // Update default settings from config
+                settings.textSize = config.textSizes.showNameDefault;
+                settings.fontColor = config.colors.defaultFontColor;
+
+                // Update slider ranges from config
+                document.getElementById('zoomSlider').min = config.controls.zoom.min;
+                document.getElementById('zoomSlider').max = config.controls.zoom.max;
+                document.getElementById('zoomSlider').value = config.controls.zoom.default;
+
+                document.getElementById('xPosSlider').min = config.controls.position.min;
+                document.getElementById('xPosSlider').max = config.controls.position.max;
+                document.getElementById('xPosSlider').value = config.controls.position.default;
+
+                document.getElementById('yPosSlider').min = config.controls.position.min;
+                document.getElementById('yPosSlider').max = config.controls.position.max;
+                document.getElementById('yPosSlider').value = config.controls.position.default;
+
+                document.getElementById('textSizeSlider').min = config.textSizes.showNameMin;
+                document.getElementById('textSizeSlider').max = config.textSizes.showNameMax;
+                document.getElementById('textSizeSlider').value = config.textSizes.showNameDefault;
+                document.getElementById('textSizeValue').textContent = config.textSizes.showNameDefault + 'pt';
+
+                // Set initial datetime value
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                document.getElementById('showDate').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+                // Load default template image
+                const defaultTemplate = config.templates.defaultTemplate === 'white'
+                    ? config.templates.whiteTemplatePath
+                    : config.templates.blackTemplatePath;
+                loadTemplateImage(defaultTemplate);
+
+                // Initialize canvas
+                initializeCanvas();
+                updateFileName();
+
+            } catch (error) {
+                console.error('Error loading config:', error);
+                alert('Error loading configuration file. Using default settings.');
+                // Fall back to defaults and continue
+                canvas.width = CANVAS_WIDTH;
+                canvas.height = CANVAS_HEIGHT;
+                loadTemplateImage('template_white.png');
+                initializeCanvas();
+                updateFileName();
+            }
+        }
+
+        // Call loadConfig on startup
+        loadConfig();
 
         // STAGE 1: Image Upload logic
         document.getElementById('imageUpload').addEventListener('change', function(e) {
@@ -141,18 +209,32 @@
         document.getElementById('zoomSlider').addEventListener('input', function(e) {
             settings.zoom = parseInt(e.target.value);
             document.getElementById('zoomValue').textContent = settings.zoom + '%';
+
+            // Constrain position when zoom changes to prevent edges from showing
+            constrainPosition();
+
+            // Update slider values to reflect constrained positions
+            document.getElementById('xPosSlider').value = settings.xPos;
+            document.getElementById('xPosValue').textContent = Math.round(settings.xPos);
+            document.getElementById('yPosSlider').value = settings.yPos;
+            document.getElementById('yPosValue').textContent = Math.round(settings.yPos);
+
             redrawCanvas();
         });
 
         document.getElementById('xPosSlider').addEventListener('input', function(e) {
             settings.xPos = parseInt(e.target.value);
-            document.getElementById('xPosValue').textContent = settings.xPos;
+            constrainPosition();
+            document.getElementById('xPosSlider').value = settings.xPos;
+            document.getElementById('xPosValue').textContent = Math.round(settings.xPos);
             redrawCanvas();
         });
 
         document.getElementById('yPosSlider').addEventListener('input', function(e) {
             settings.yPos = parseInt(e.target.value);
-            document.getElementById('yPosValue').textContent = settings.yPos;
+            constrainPosition();
+            document.getElementById('yPosSlider').value = settings.yPos;
+            document.getElementById('yPosValue').textContent = Math.round(settings.yPos);
             redrawCanvas();
         });
 
@@ -166,15 +248,21 @@
         document.getElementById('showDate').addEventListener('change', function(e) {
             // Format the date for display
             const date = new Date(e.target.value);
-            const options = { 
-                year: 'numeric', 
-                month: 'short', 
+            const options = {
+                year: 'numeric',
+                month: 'short',
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit'
             };
             settings.showDate = date.toLocaleDateString('en-US', options);
             updateFileName();
+            redrawCanvas();
+        });
+
+        // Show length dropdown
+        document.getElementById('showLength').addEventListener('change', function(e) {
+            settings.showLength = e.target.value;
             redrawCanvas();
         });
 
@@ -240,13 +328,15 @@
 
         // Add event listeners for template selection buttons
         document.getElementById('whiteTemplateBtn').addEventListener('click', function() {
-            loadTemplateImage('template_white.png');
+            const templatePath = config ? config.templates.whiteTemplatePath : 'template_white.png';
+            loadTemplateImage(templatePath);
             settings.fontColor = 'white'; // Set font color to white
             redrawCanvas(); // Redraw the canvas with the updated font color
         });
 
         document.getElementById('blackTemplateBtn').addEventListener('click', function() {
-            loadTemplateImage('template_black.png');
+            const templatePath = config ? config.templates.blackTemplatePath : 'template_black.png';
+            loadTemplateImage(templatePath);
             settings.fontColor = 'black'; // Set font color to black
             redrawCanvas(); // Redraw the canvas with the updated font color
         });
@@ -293,35 +383,68 @@
             img.src = src;
         }
         
-        // Calculate initial zoom to fit the entire image within canvas
+        // Calculate initial zoom to ensure image always covers canvas (no edges visible)
         function calculateInitialZoom() {
             if (!userImage) return;
-            
-            // Get aspect ratios
-            const imageRatio = userImage.width / userImage.height;
-            const canvasRatio = CANVAS_WIDTH / CANVAS_HEIGHT;
-            
-            // Calculate scale factor to fit entire image
-            let scaleFactor;
-            if (imageRatio > canvasRatio) {
-                // Image is wider than canvas ratio
-                scaleFactor = CANVAS_WIDTH / userImage.width;
-            } else {
-                // Image is taller than canvas ratio
-                scaleFactor = CANVAS_HEIGHT / userImage.height;
-            }
-            
-            // Scale down slightly to ensure full visibility (90% of fitting size)
-            scaleFactor *= 0.9;
-            
-            // Convert to percentage zoom (100% is original size)
-            const initialZoom = (scaleFactor * 100) - 100;
-            
-            // Update zoom slider
+
+            // Set zoom slider minimum to 0
+            // 0 = exact coverage, positive values = larger than coverage
             const zoomSlider = document.getElementById('zoomSlider');
-            zoomSlider.value = initialZoom;
-            document.getElementById('zoomValue').textContent = Math.round(initialZoom) + '%';
-            settings.zoom = Math.round(initialZoom);
+            zoomSlider.min = 0;
+
+            // Get initial zoom percentage from config (e.g., 5 means 5% larger than minimum coverage)
+            const initialZoomPercent = config ? config.image.initialZoomFactor : 5;
+
+            // Update zoom slider and settings
+            zoomSlider.value = initialZoomPercent;
+            document.getElementById('zoomValue').textContent = initialZoomPercent + '%';
+            settings.zoom = initialZoomPercent;
+        }
+
+        // Function to calculate maximum allowed position offsets to prevent edges from showing
+        function getMaxPositionOffsets() {
+            if (!userImage) return { maxX: 0, maxY: 0 };
+
+            const imgWidth = userImage.width;
+            const imgHeight = userImage.height;
+            const canvasRatio = CANVAS_WIDTH / CANVAS_HEIGHT;
+            const imgRatio = imgWidth / imgHeight;
+            const dragMultiplier = config ? config.controls.position.dragMultiplier : 5;
+
+            // Calculate minimum scale factor needed to cover entire canvas
+            let minScaleFactor;
+            if (imgRatio > canvasRatio) {
+                minScaleFactor = CANVAS_HEIGHT / imgHeight;
+            } else {
+                minScaleFactor = CANVAS_WIDTH / imgWidth;
+            }
+
+            // Apply user's zoom on top of minimum coverage
+            const zoomMultiplier = 1 + (settings.zoom / 100);
+            const actualScaleFactor = minScaleFactor * zoomMultiplier;
+
+            // Calculate actual drawn dimensions
+            const drawWidth = imgWidth * actualScaleFactor;
+            const drawHeight = imgHeight * actualScaleFactor;
+
+            // Calculate how much the image overhangs the canvas on each side
+            const xOverhang = Math.max(0, (drawWidth - CANVAS_WIDTH) / 2);
+            const yOverhang = Math.max(0, (drawHeight - CANVAS_HEIGHT) / 2);
+
+            // Convert overhang to position units (divide by dragMultiplier)
+            const maxX = xOverhang / dragMultiplier;
+            const maxY = yOverhang / dragMultiplier;
+
+            return { maxX, maxY };
+        }
+
+        // Function to constrain position within valid bounds
+        function constrainPosition() {
+            const { maxX, maxY } = getMaxPositionOffsets();
+
+            // Clamp xPos and yPos within allowed range
+            settings.xPos = Math.max(-maxX, Math.min(maxX, settings.xPos));
+            settings.yPos = Math.max(-maxY, Math.min(maxY, settings.yPos));
         }
 
         // Function to update the file name based on show name and date
@@ -346,18 +469,22 @@
         function drawTagBox(text, x, y) {
             if (!text) return;
 
+            // Get config values or use defaults
+            const tagFontSize = config ? config.textSizes.tag : 24;
+            const tagFont = config ? config.fonts.tagFont : 'Font2';
+            const paddingX = config ? config.tagBox.paddingX : 20;
+            const paddingY = config ? config.tagBox.paddingY : 12;
+            const borderWidth = config ? config.tagBox.borderWidth : 3;
+            const textWidthBuffer = config ? config.tagBox.textWidthBuffer : 5;
+
             // Set font for measuring text
-            ctx.font = '24pt Font2'; // Ensure this matches the rendering font
+            ctx.font = `${tagFontSize}pt ${tagFont}`;
 
             // Measure the transformed text
             const transformedText = text.toUpperCase();
             const metrics = ctx.measureText(transformedText);
-            const textWidth = metrics.width + 5; // Add a buffer of 10 pixels
-            const textHeight = 24; // Approximate height in points
-
-            // Box padding
-            const paddingX = 20;
-            const paddingY = 12;
+            const textWidth = metrics.width + textWidthBuffer;
+            const textHeight = tagFontSize;
 
             // Calculate box dimensions
             const boxWidth = textWidth + paddingX * 2;
@@ -365,7 +492,7 @@
 
             // Draw the box border
             ctx.strokeStyle = settings.fontColor || 'white';
-            ctx.lineWidth = 3;
+            ctx.lineWidth = borderWidth;
             ctx.strokeRect(x, y - boxHeight / 2, boxWidth, boxHeight);
 
             // Draw the text
@@ -381,35 +508,50 @@
             ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
             // Background fill (in case image doesn't cover canvas)
-            ctx.fillStyle = '#000000';
+            const bgColor = config ? config.canvas.backgroundColor : '#000000';
+            ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
             // Draw user image if available
             if (userImage) {
-                const zoomFactor = 1 + (settings.zoom / 100);
                 const imgWidth = userImage.width;
                 const imgHeight = userImage.height;
-                let drawWidth, drawHeight;
                 const canvasRatio = CANVAS_WIDTH / CANVAS_HEIGHT;
                 const imgRatio = imgWidth / imgHeight;
 
+                // Calculate minimum scale factor needed to cover entire canvas
+                let minScaleFactor;
                 if (imgRatio > canvasRatio) {
-                    drawWidth = CANVAS_WIDTH * zoomFactor;
-                    drawHeight = drawWidth / imgRatio;
+                    // Image is wider - scale based on HEIGHT to ensure canvas is filled
+                    minScaleFactor = CANVAS_HEIGHT / imgHeight;
                 } else {
-                    drawHeight = CANVAS_HEIGHT * zoomFactor;
-                    drawWidth = drawHeight * imgRatio;
+                    // Image is taller - scale based on WIDTH to ensure canvas is filled
+                    minScaleFactor = CANVAS_WIDTH / imgWidth;
                 }
 
-                const xOffset = (CANVAS_WIDTH - drawWidth) / 2 + settings.xPos * 5;
-                const yOffset = (CANVAS_HEIGHT - drawHeight) / 2 + settings.yPos * 5;
+                // Apply user's zoom on top of minimum coverage
+                // settings.zoom is a percentage (0 = exact coverage, 10 = 10% larger, etc.)
+                const zoomMultiplier = 1 + (settings.zoom / 100);
+                const actualScaleFactor = minScaleFactor * zoomMultiplier;
+
+                // Calculate final draw dimensions
+                const drawWidth = imgWidth * actualScaleFactor;
+                const drawHeight = imgHeight * actualScaleFactor;
+
+                const dragMultiplier = config ? config.controls.position.dragMultiplier : 5;
+                const xOffset = (CANVAS_WIDTH - drawWidth) / 2 + settings.xPos * dragMultiplier;
+                const yOffset = (CANVAS_HEIGHT - drawHeight) / 2 + settings.yPos * dragMultiplier;
 
                 ctx.drawImage(userImage, xOffset, yOffset, drawWidth, drawHeight);
             } else {
-                ctx.fillStyle = '#eeeeee';
+                const placeholderBg = config ? config.colors.placeholderBackground : '#eeeeee';
+                const placeholderText = config ? config.colors.placeholderText : '#999999';
+                const dateTimeFont = config ? config.fonts.dateTimeFont : 'Font2';
+
+                ctx.fillStyle = placeholderBg;
                 ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-                ctx.fillStyle = '#999999';
-                ctx.font = '24px Font2';
+                ctx.fillStyle = placeholderText;
+                ctx.font = `24px ${dateTimeFont}`;
                 ctx.textAlign = 'center';
                 ctx.fillText('Upload an image to get started', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
             }
@@ -420,15 +562,17 @@
             }
 
             // Set font for text overlay - using dynamic font color and custom size
-            ctx.font = `${settings.textSize}pt CustomFont`;
+            const showNameFont = config ? config.fonts.showNameFont : 'CustomFont';
+            ctx.font = `${settings.textSize}pt ${showNameFont}`;
             ctx.fillStyle = settings.fontColor || 'white'; // Default to white if not set
             ctx.textAlign = 'center';
 
             // Draw show name text with wrapping
             if (settings.showName) {
-                const maxWidth = 800;
-                const lineHeight = settings.textSize * 1.6;
-                const centerY = 1100;
+                const maxWidth = config ? config.textPositions.showName.maxWidth : 800;
+                const lineHeightMultiplier = config ? config.textPositions.showName.lineHeightMultiplier : 1.6;
+                const lineHeight = settings.textSize * lineHeightMultiplier;
+                const centerY = config ? config.textPositions.showName.centerY : 1100;
                 const showNameUpperCase = settings.showName.toUpperCase();
                 wrapText(ctx, showNameUpperCase, CANVAS_WIDTH / 2, centerY, maxWidth, lineHeight);
             }
@@ -436,36 +580,74 @@
             // Draw show date text
             if (settings.showDate) {
                 const date = new Date(document.getElementById('showDate').value);
-                const timeOptions = { hour: 'numeric', hour12: true };
-                const time = date.toLocaleTimeString('en-US', timeOptions).toLowerCase().toUpperCase();
+
+                // Calculate time display (range if show length is selected, single time otherwise)
+                let timeDisplay;
+                if (settings.showLength) {
+                    // Calculate end time based on show length
+                    const startDate = new Date(date);
+                    const endDate = new Date(date.getTime() + parseInt(settings.showLength) * 60000);
+
+                    // Format start time
+                    const startHour = startDate.getHours();
+                    const startMin = startDate.getMinutes();
+                    const startPeriod = startHour >= 12 ? 'PM' : 'AM';
+                    const startHour12 = startHour % 12 || 12;
+                    const startTimeStr = startMin > 0 ? `${startHour12}.${String(startMin).padStart(2, '0')}` : `${startHour12}`;
+
+                    // Format end time
+                    const endHour = endDate.getHours();
+                    const endMin = endDate.getMinutes();
+                    const endPeriod = endHour >= 12 ? 'PM' : 'AM';
+                    const endHour12 = endHour % 12 || 12;
+                    const endTimeStr = endMin > 0 ? `${endHour12}.${String(endMin).padStart(2, '0')}` : `${endHour12}`;
+
+                    // Build time range string
+                    if (startPeriod === endPeriod) {
+                        // Same period: "7-9.30AM"
+                        timeDisplay = `${startTimeStr}-${endTimeStr}${endPeriod}`;
+                    } else {
+                        // Different periods: "11.30AM-1PM"
+                        timeDisplay = `${startTimeStr}${startPeriod}-${endTimeStr}${endPeriod}`;
+                    }
+                } else {
+                    // No show length selected, just show single time
+                    const timeOptions = { hour: 'numeric', hour12: true };
+                    timeDisplay = date.toLocaleTimeString('en-US', timeOptions).toLowerCase().toUpperCase();
+                }
+
                 const dayName = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase().toUpperCase();
                 const day = String(date.getDate()).padStart(2, '0');
                 const month = String(date.getMonth() + 1).padStart(2, '0');
                 const year = String(date.getFullYear()).slice(-2);
                 const formattedDate = `${day}.${month}.${year}`.toUpperCase();
 
-                const rightMargin = 50;
+                const rightMargin = config ? config.textPositions.dateTime.rightMargin : 50;
                 const timeX = CANVAS_WIDTH - rightMargin;
-                const timeY = 1191;
+                const timeY = config ? config.textPositions.dateTime.timeY : 1191;
                 const dayNameX = CANVAS_WIDTH - rightMargin;
-                const dayNameY = timeY + 42;
+                const dayNameYOffset = config ? config.textPositions.dateTime.dayNameYOffset : 42;
+                const dayNameY = timeY + dayNameYOffset;
                 const dateX = CANVAS_WIDTH - rightMargin;
-                const dateY = dayNameY + 42;
+                const dateYOffset = config ? config.textPositions.dateTime.dateYOffset : 84;
+                const dateY = timeY + dateYOffset;
 
-                ctx.font = `28pt Font2`;
+                const dateTimeFontSize = config ? config.textSizes.dateTime : 28;
+                const dateTimeFont = config ? config.fonts.dateTimeFont : 'Font2';
+                ctx.font = `${dateTimeFontSize}pt ${dateTimeFont}`;
                 ctx.fillStyle = settings.fontColor || 'white'; // Default to white if not set
                 ctx.textAlign = 'right';
 
-                ctx.fillText(time, timeX, timeY);
+                ctx.fillText(timeDisplay, timeX, timeY);
                 ctx.fillText(dayName, dayNameX, dayNameY);
                 ctx.fillText(formattedDate, dateX, dateY);
             }
 
             // Draw tags
-            const leftMargin = 30;
-            const tagXOffset = 12; // Horizontal offset for tags
-            const tagY = 1200; // Base Y position for Tag 1
-            const tagSpacing = 60; // Vertical spacing between tags
+            const leftMargin = config ? config.textPositions.tags.leftMargin : 30;
+            const tagXOffset = config ? config.textPositions.tags.xOffset : 12;
+            const tagY = config ? config.textPositions.tags.baseY : 1200;
+            const tagSpacing = config ? config.textPositions.tags.spacing : 60;
 
             if (settings.tag1) {
                 drawTagBox(settings.tag1, leftMargin + tagXOffset, tagY); // Draw Tag 1
@@ -508,10 +690,14 @@
 
         // Initialize the canvas with a placeholder
         function initializeCanvas() {
-            ctx.fillStyle = '#eeeeee';
+            const placeholderBg = config ? config.colors.placeholderBackground : '#eeeeee';
+            const placeholderText = config ? config.colors.placeholderText : '#999999';
+            const dateTimeFont = config ? config.fonts.dateTimeFont : 'Font2';
+
+            ctx.fillStyle = placeholderBg;
             ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-            ctx.fillStyle = '#999999';
-            ctx.font = '24px Font2';
+            ctx.fillStyle = placeholderText;
+            ctx.font = `24px ${dateTimeFont}`;
             ctx.textAlign = 'center';
             ctx.fillText('Upload an image to get started', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
 
@@ -520,12 +706,6 @@
             document.getElementById('textSizeValue').textContent = settings.textSize + 'pt';
             redrawCanvas(); // Redraw the canvas with the correct font size
         }
-
-        // Initialize the canvas when the page loads
-        initializeCanvas();
-        
-        // Initialize the filename with current date
-        updateFileName();
         
         // ---- Add drag functionality for image positioning ----
         
@@ -556,31 +736,30 @@
         // Mouse move event - update position while dragging
         window.addEventListener('mousemove', function(e) {
             if (!isDragging) return;
-            
+
             // Calculate the movement delta
             const deltaX = e.clientX - lastMouseX;
             const deltaY = e.clientY - lastMouseY;
-            
+
             // Get scaling factor to adjust mouse movement to canvas coordinates
             const scaleFactor = getCanvasScaleFactor();
-            
+
             // Update the position with scaled movement
-            settings.xPos += deltaX / scaleFactor; // Remove inversion
-            settings.yPos += deltaY / scaleFactor; // Remove inversion
-            
-            // Clamp position values
-            settings.xPos = Math.max(-100, Math.min(100, settings.xPos));
-            settings.yPos = Math.max(-100, Math.min(100, settings.yPos));
-            
+            settings.xPos += deltaX / scaleFactor;
+            settings.yPos += deltaY / scaleFactor;
+
+            // Constrain position to prevent image edges from showing
+            constrainPosition();
+
             // Update sliders
             document.getElementById('xPosSlider').value = settings.xPos;
             document.getElementById('yPosSlider').value = settings.yPos;
             document.getElementById('xPosValue').textContent = Math.round(settings.xPos);
             document.getElementById('yPosValue').textContent = Math.round(settings.yPos);
-            
+
             // Redraw canvas with new position
             redrawCanvas();
-            
+
             // Update last position
             lastMouseX = e.clientX;
             lastMouseY = e.clientY;
