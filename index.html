@@ -34,7 +34,7 @@
 
             <!-- Upload Image (Artist Image mode only) -->
             <div class="stage" id="stageUpload">
-                <div class="stage-title">Upload Image</div>
+                <div class="stage-title">Stage 2: Upload Image</div>
                 <input type="file" id="imageUpload" accept="image/*">
                 <p>Image will be automatically resized to 1080px × 1350px - 4:5 aspect ratio </p>
             </div>
@@ -79,6 +79,13 @@
                         </span>
                         <span class="combo-label">Warm Sand / Ochre</span>
                     </button>
+                    <button class="combo-swatch" data-text="#c4e6ef" data-bg="#54290b">
+                        <span class="combo-preview">
+                            <span class="combo-top" style="background:#c4e6ef"></span>
+                            <span class="combo-bottom" style="background:#54290b"></span>
+                        </span>
+                        <span class="combo-label">Powder Blue / Brown</span>
+                    </button>
                 </div>
             </div>
 
@@ -112,7 +119,7 @@
 
             <!-- Stage 2: Adjust Image -->
             <div class="stage" id="stage2">
-                <div class="stage-title">Stage 2: Adjust Image</div>
+                <div class="stage-title">Stage 3: Adjust Image</div>
                 <label for="zoomSlider">Zoom: <span id="zoomValue" class="range-value">0%</span></label>
                 <input type="range" id="zoomSlider" min="-50" max="150" value="0">
                 
@@ -127,7 +134,7 @@
 
             <!-- Stage 3: Add Text -->
             <div class="stage" id="stage3">
-                <div class="stage-title">Stage 3: Show Details</div>
+                <div class="stage-title">Stage 4: Show Details</div>
                 <label for="showName">Show Name:</label>
                 <input type="text" id="showName" placeholder="Enter show name">
 
@@ -170,7 +177,7 @@
 
             <!-- Stage 4: Choose Colour (Artist Image mode only) -->
             <div class="stage" id="stageColour">
-                <div class="stage-title">Stage 4: Choose Colour</div>
+                <div class="stage-title">Stage 5: Choose Colour</div>
                 <p class="stage-description">Select a colour for the title and text.</p>
                 <div class="colour-grid">
                     <button class="colour-swatch active" data-colour="#ffffff" style="background:#ffffff" title="White"></button>
@@ -200,7 +207,7 @@
 
             <!-- Stage 5: Export -->
             <div class="stage" id="stage4">
-                <div class="stage-title">Stage 5: Export</div>
+                <div class="stage-title">Stage 6: Export</div>
                 <label for="fileName">File Name:</label>
                 <input type="text" id="fileName" readonly>
                 <button id="exportBtn">Export Image</button>

@@ -292,6 +292,11 @@ function switchMode(mode) {
         stageColour.classList.remove('hidden');
         stage2.classList.remove('hidden');
         dateTimeFields.classList.add('hidden');
+        document.querySelector('#stageUpload .stage-title').textContent = 'Stage 2: Upload Image';
+        document.querySelector('#stage2 .stage-title').textContent = 'Stage 3: Adjust Image';
+        document.querySelector('#stage3 .stage-title').textContent = 'Stage 4: Show Details';
+        document.querySelector('#stageColour .stage-title').textContent = 'Stage 5: Choose Colour';
+        document.querySelector('#stage4 .stage-title').textContent = 'Stage 6: Export';
     } else {
         smfmCard.classList.add('active');
         artistCard.classList.remove('active');
@@ -301,6 +306,10 @@ function switchMode(mode) {
         stageColour.classList.add('hidden');
         stage2.classList.add('hidden');
         dateTimeFields.classList.remove('hidden');
+        document.querySelector('#stageBgColor .stage-title').textContent = 'Stage 2: Colour';
+        document.querySelector('#stageDrawing .stage-title').textContent = 'Stage 3: Drawing';
+        document.querySelector('#stage3 .stage-title').textContent = 'Stage 4: Show Details';
+        document.querySelector('#stage4 .stage-title').textContent = 'Stage 5: Export';
         if (!settings.smfmDrawing) {
             settings.smfmDrawing = DRAWINGS[Math.floor(Math.random() * DRAWINGS.length)];
             document.getElementById('drawingSelect').value = settings.smfmDrawing;
