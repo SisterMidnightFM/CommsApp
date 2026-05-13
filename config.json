@@ -1,0 +1,56 @@
+{
+  "canvas": {
+    "width": 1080,
+    "height": 1350,
+    "backgroundColor": "#000000"
+  },
+  "templates": {
+    "defaultTemplate": "white",
+    "whiteTemplatePath": "assets/template_white.png",
+    "blackTemplatePath": "assets/template_black.png"
+  },
+  "fonts": {
+    "showNameFont": "SisterMidnight",
+    "dateTimeFont": "SisterMidnight"
+  },
+  "textSizes": {
+    "showNameDefault": 33,
+    "showNameMin": 10,
+    "showNameMax": 50,
+    "dateTime": 28
+  },
+  "textPositions": {
+    "showName": {
+      "centerY": 1090,
+      "maxWidth": 800,
+      "lineHeightMultiplier": 0.96
+    },
+    "dateTime": {
+      "rightMargin": 50,
+      "timeY": 1191,
+      "dayNameYOffset": 42,
+      "dateYOffset": 84
+    }
+  },
+  "colors": {
+    "defaultFontColor": "white",
+    "placeholderBackground": "#eeeeee",
+    "placeholderText": "#999999"
+  },
+  "controls": {
+    "zoom": {
+      "min": -50,
+      "max": 150,
+      "default": 0
+    },
+    "position": {
+      "min": -100,
+      "max": 100,
+      "default": 0,
+      "dragMultiplier": 5
+    }
+  },
+  "image": {
+    "initialZoomFactor": 5
+  }
+}

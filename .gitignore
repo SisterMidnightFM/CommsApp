@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Claude Code project instructions (contains private notes)
+CLAUDE.md
+
+# Archived versions (not active)
+versions/

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMFM Instagram Comms App V3.0</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="assets/favicon.png" type="image/x-icon">
+</head>
+<body>
+    <!-- Main header -->
+    <header>
+        SMFM Instagram Comms App V3.0
+    </header>
+
+    <!-- App container with split layout -->
+    <div class="app-container">
+        <!-- Left side: Controls panel -->
+        <div class="controls-panel">
+            <!-- Stage 1: Choose Image Type -->
+            <div class="stage" id="stage1">
+                <div class="stage-title">Stage 1: Choose Image Type</div>
+                <div class="mode-selection">
+                    <div class="mode-card active" id="modeArtistImage">
+                        <img src="assets/Artist Image Example.png" alt="Artist Image example">
+                        <span>Artist Image</span>
+                    </div>
+                    <div class="mode-card" id="modeSMFMTemplate">
+                        <img src="assets/SMFM art template Example.png" alt="SMFM art template example">
+                        <span>SMFM art template</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Image (Artist Image mode only) -->
+            <div class="stage" id="stageUpload">
+                <div class="stage-title">Upload Image</div>
+                <input type="file" id="imageUpload" accept="image/*">
+                <p>Image will be automatically resized to 1080px × 1350px - 4:5 aspect ratio </p>
+            </div>
+
+            <!-- Colour combos (SMFM art template mode only) -->
+            <div class="stage hidden" id="stageBgColor">
+                <div class="stage-title">Colour</div>
+                <p class="stage-description">Top = text colour &nbsp;·&nbsp; Bottom = background colour</p>
+                <div class="combo-grid" id="colourComboGrid">
+                    <button class="combo-swatch active" data-text="#d14936" data-bg="#e7dfd9">
+                        <span class="combo-preview">
+                            <span class="combo-top" style="background:#d14936"></span>
+                            <span class="combo-bottom" style="background:#e7dfd9"></span>
+                        </span>
+                        <span class="combo-label">Vermillion / Warm Sand</span>
+                    </button>
+                    <button class="combo-swatch" data-text="#2c2635" data-bg="#9f6430">
+                        <span class="combo-preview">
+                            <span class="combo-top" style="background:#2c2635"></span>
+                            <span class="combo-bottom" style="background:#9f6430"></span>
+                        </span>
+                        <span class="combo-label">Muted Plum / Ochre</span>
+                    </button>
+                    <button class="combo-swatch" data-text="#2c2635" data-bg="#f16d35">
+                        <span class="combo-preview">
+                            <span class="combo-top" style="background:#2c2635"></span>
+                            <span class="combo-bottom" style="background:#f16d35"></span>
+                        </span>
+                        <span class="combo-label">Muted Plum / Tangerine</span>
+                    </button>
+                    <button class="combo-swatch" data-text="#c8c0b5" data-bg="#554735">
+                        <span class="combo-preview">
+                            <span class="combo-top" style="background:#c8c0b5"></span>
+                            <span class="combo-bottom" style="background:#554735"></span>
+                        </span>
+                        <span class="combo-label">Limestone / Dark Olive</span>
+                    </button>
+                    <button class="combo-swatch" data-text="#e7dfd9" data-bg="#9f6430">
+                        <span class="combo-preview">
+                            <span class="combo-top" style="background:#e7dfd9"></span>
+                            <span class="combo-bottom" style="background:#9f6430"></span>
+                        </span>
+                        <span class="combo-label">Warm Sand / Ochre</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Drawing selection (SMFM art template mode only) -->
+            <div class="stage hidden" id="stageDrawing">
+                <div class="stage-title">Drawing</div>
+                <p class="stage-description">Select a drawing to place in the centre of the image.</p>
+                <select id="drawingSelect">
+                    <option value="cat.svg">Cat</option>
+                    <option value="dancers.svg">Dancers</option>
+                    <option value="disco.svg">Disco</option>
+                    <option value="flower.svg">Flower</option>
+                    <option value="guitar.svg">Guitar</option>
+                    <option value="guitar 2.svg">Guitar 2</option>
+                    <option value="hands.svg">Hands</option>
+                    <option value="moon.svg">Moon</option>
+                    <option value="plant.svg">Plant</option>
+                    <option value="potted plants.svg">Potted Plants</option>
+                    <option value="record.svg">Record</option>
+                    <option value="record 2.svg">Record 2</option>
+                    <option value="record 3.svg">Record 3</option>
+                    <option value="saxophone.svg">Saxophone</option>
+                    <option value="Stars.svg">Stars</option>
+                    <option value="sun.svg">Sun</option>
+                    <option value="trumpet.svg">Trumpet</option>
+                    <option value="turntable.svg">Turntable</option>
+                </select>
+                <label for="drawingSizeSlider">Drawing Size: <span id="drawingSizeValue" class="range-value">100%</span></label>
+                <input type="range" id="drawingSizeSlider" min="60" max="190" value="100">
+            </div>
+
+            <!-- Stage 2: Adjust Image -->
+            <div class="stage" id="stage2">
+                <div class="stage-title">Stage 2: Adjust Image</div>
+                <label for="zoomSlider">Zoom: <span id="zoomValue" class="range-value">0%</span></label>
+                <input type="range" id="zoomSlider" min="-50" max="150" value="0">
+                
+                <label for="xPosSlider">X Position: <span id="xPosValue" class="range-value">0</span></label>
+                <input type="range" id="xPosSlider" min="-100" max="100" value="0">
+                
+                <label for="yPosSlider">Y Position: <span id="yPosValue" class="range-value">0</span></label>
+                <input type="range" id="yPosSlider" min="-100" max="100" value="0">
+                
+                <p><small>Tip: You can also click and drag directly on the image to adjust position</small></p>
+            </div>
+
+            <!-- Stage 3: Add Text -->
+            <div class="stage" id="stage3">
+                <div class="stage-title">Stage 3: Show Details</div>
+                <label for="showName">Show Name:</label>
+                <input type="text" id="showName" placeholder="Enter show name">
+
+                <label for="artistName">Artist Name (optional):</label>
+                <input type="text" id="artistName" placeholder="Artist name">
+
+                <div id="dateTimeFields" class="hidden">
+                    <label for="showDateOnly">Show Date:</label>
+                    <input type="date" id="showDateOnly">
+                    <label>Show Time:</label>
+                    <div class="time-picker">
+                        <select id="showHour"></select>
+                        <select id="showMinute">
+                            <option value="00">00</option>
+                            <option value="15">15</option>
+                            <option value="30">30</option>
+                            <option value="45">45</option>
+                        </select>
+                        <select id="showAmPm">
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                        </select>
+                    </div>
+
+                    <label for="showLength">Show Length:</label>
+                    <select id="showLength">
+                        <option value="">Select duration (optional)</option>
+                        <option value="30">30 minutes</option>
+                        <option value="60">1 hour</option>
+                        <option value="90">1 hour 30 minutes</option>
+                        <option value="120">2 hours</option>
+                        <option value="150">2 hours 30 minutes</option>
+                        <option value="180">3 hours</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Stage 4: Choose Colour (Artist Image mode only) -->
+            <div class="stage" id="stageColour">
+                <div class="stage-title">Stage 4: Choose Colour</div>
+                <p class="stage-description">Select a colour for the title and text.</p>
+                <div class="colour-grid">
+                    <button class="colour-swatch active" data-colour="#ffffff" style="background:#ffffff" title="White"></button>
+                    <button class="colour-swatch" data-colour="#000000" style="background:#000000" title="Black"></button>
+                    <button class="colour-swatch" data-colour="#d14936" style="background:#d14936" title="Vermillion"></button>
+                    <button class="colour-swatch" data-colour="#9e4429" style="background:#9e4429" title="Burnt Sienna"></button>
+                    <button class="colour-swatch" data-colour="#351218" style="background:#351218" title="Deep Burgundy"></button>
+                    <button class="colour-swatch" data-colour="#2c2635" style="background:#2c2635" title="Muted Plum"></button>
+                    <button class="colour-swatch" data-colour="#f16d35" style="background:#f16d35" title="Tangerine"></button>
+                    <button class="colour-swatch" data-colour="#c4e6ef" style="background:#c4e6ef" title="Powder Blue"></button>
+                    <button class="colour-swatch" data-colour="#e7dfd9" style="background:#e7dfd9" title="Warm Sand"></button>
+                    <button class="colour-swatch" data-colour="#3b302a" style="background:#3b302a" title="Dark Umber"></button>
+                    <button class="colour-swatch" data-colour="#54290b" style="background:#54290b" title="Brown"></button>
+                    <button class="colour-swatch" data-colour="#dadad9" style="background:#dadad9" title="Cool Grey"></button>
+                    <button class="colour-swatch" data-colour="#cfbdad" style="background:#cfbdad" title="Warm Sand 2"></button>
+                    <button class="colour-swatch" data-colour="#554735" style="background:#554735" title="Dark Olive"></button>
+                    <button class="colour-swatch" data-colour="#9f6430" style="background:#9f6430" title="Ochre"></button>
+                    <button class="colour-swatch" data-colour="#aca4a3" style="background:#aca4a3" title="Coated Grey"></button>
+                    <button class="colour-swatch" data-colour="#ab8c7f" style="background:#ab8c7f" title="Clay Beige"></button>
+                    <button class="colour-swatch" data-colour="#49643c" style="background:#49643c" title="Olive Green"></button>
+                    <button class="colour-swatch" data-colour="#70819a" style="background:#70819a" title="Pastel Blue"></button>
+                    <button class="colour-swatch" data-colour="#c4b29f" style="background:#c4b29f" title="Stone Beige"></button>
+                    <button class="colour-swatch" data-colour="#704f50" style="background:#704f50" title="Dusty Rose"></button>
+                    <button class="colour-swatch" data-colour="#e4a7c4" style="background:#e4a7c4" title="Blush Pink"></button>
+                </div>
+            </div>
+
+            <!-- Stage 5: Export -->
+            <div class="stage" id="stage4">
+                <div class="stage-title">Stage 5: Export</div>
+                <label for="fileName">File Name:</label>
+                <input type="text" id="fileName" readonly>
+                <button id="exportBtn">Export Image</button>
+                <p id="exportStatus"></p>
+            </div>
+        </div>
+
+        <!-- Right side: Preview panel -->
+        <div class="preview-panel">
+            <div class="canvas-container">
+                <canvas id="previewCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

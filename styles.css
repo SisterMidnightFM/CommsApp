@@ -1,0 +1,430 @@
+/* ============================================================
+   SMFM COLOUR PALETTE
+   ============================================================ */
+:root {
+    --vermillion:   #d14936;
+    --burnt-sienna: #9e4429;
+    --deep-burgundy:#351218;
+    --muted-plum:   #2c2635;
+    --tangerine:    #f16d35;
+    --powder-blue:  #c4e6ef;
+    --warm-sand:    #e7dfd9;
+    --dark-umber:   #3b302a;
+    --brown:        #54290b;
+    --cool-grey:    #dadad9;
+    --warm-sand-2:  #cfbdad;
+    --dark-olive:   #554735;
+    --ochre:        #9f6430;
+    --coated-grey:  #aca4a3;
+    --clay-beige:   #ab8c7f;
+    --olive-green:  #49643c;
+    --pastel-blue:  #70819a;
+    --stone-beige:  #c4b29f;
+    --dusty-rose:   #704f50;
+    --blush-pink:   #e4a7c4;
+    --limestone:    #c8c0b5;
+}
+/* ============================================================ */
+
+/* Global styles */
+@font-face {
+    font-family: 'CustomFont';
+    src: url('assets/Font.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Font2';
+    src: url('assets/Font2.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'SisterMidnight';
+    src: url('assets/SisterMidnight-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'FOSSModern';
+    src: url('assets/FOSS-Modern-Bold.otf') format('opentype');
+}
+
+body {
+    font-family: SisterMidnight, sans-serif;
+    letter-spacing: -0.05em;
+    line-height: 0.96;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+.app-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Header styles */
+header {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 24px;
+}
+
+/* Controls panel (left side) */
+.controls-panel {
+    flex: 1;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-family: FOSSModern, sans-serif;
+}
+
+/* Preview panel (right side) */
+.preview-panel {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e0e0e0;
+    overflow: hidden;
+}
+
+/* Stage styles */
+.stage {
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stage-title {
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.stage-description {
+    font-size: 13px;
+    color: #666;
+    margin: 0 0 12px;
+}
+
+/* Colour picker grid */
+.colour-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+.colour-swatch {
+    aspect-ratio: 1;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.1s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+}
+
+.colour-swatch:hover {
+    transform: scale(1.12);
+}
+
+.colour-swatch.active {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #333;
+    transform: scale(1.08);
+}
+
+/* Input styles */
+input, button, select {
+    margin: 8px 0;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+label {
+    display: block;
+    margin: 8px 0 4px;
+}
+
+input[type="range"] {
+    width: 100%;
+}
+
+input[type="text"], input[type="datetime-local"] {
+    width: 95%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.time-picker {
+    display: flex;
+    gap: 6px;
+    margin: 4px 0;
+}
+
+.time-picker select {
+    margin: 0;
+    padding: 8px 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex: 1;
+}
+
+/* Canvas container */
+.canvas-container {
+    position: relative;
+    max-width: 100%;
+    max-height: 100%;
+    cursor: move; /* Show move cursor when hovering over canvas */
+}
+
+/* Canvas styling */
+canvas {
+    max-width: 100%;
+    max-height: 90vh;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Utility */
+.hidden {
+    display: none;
+}
+
+/* Mode selection cards */
+.mode-selection {
+    display: flex;
+    gap: 10px;
+}
+
+.mode-card {
+    flex: 1;
+    border: 3px solid #ddd;
+    border-radius: 6px;
+    padding: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.15s;
+}
+
+.mode-card:hover {
+    border-color: #aaa;
+}
+
+.mode-card.active {
+    border-color: #4CAF50;
+}
+
+.mode-card img {
+    width: 100%;
+    display: block;
+    border-radius: 3px;
+}
+
+.mode-card span {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Colour combo swatches (SMFM template mode) */
+.combo-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.combo-swatch {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    background: none;
+    color: inherit;
+    width: 100%;
+    text-align: left;
+    font-size: inherit;
+    transition: border-color 0.15s;
+}
+
+.combo-swatch:hover {
+    border-color: #aaa;
+    background: none;
+}
+
+.combo-swatch.active {
+    border-color: #4CAF50;
+    background: none;
+}
+
+.combo-preview {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.combo-top,
+.combo-bottom {
+    flex: 1;
+    display: block;
+}
+
+.combo-label {
+    font-size: 12px;
+    color: #333;
+}
+
+/* Range value display */
+.range-value {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 14px;
+    color: #383838;
+    width: 50px;
+}
+
+/* ============================================================
+   MOBILE RESPONSIVE LAYOUT (≤768px)
+   ============================================================ */
+@media (max-width: 768px) {
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    header {
+        padding: 10px 0;
+        font-size: 18px;
+    }
+
+    /* Switch from side-by-side row to stacked column.
+       Remove 100vh — in column layout it clips the controls panel. */
+    .app-container {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    /* Canvas preview above controls via order, sticky so it stays visible
+       as the user scrolls through the stages below. */
+    .preview-panel {
+        order: -1;
+        flex: none;
+        height: 65vw;
+        min-height: 220px;
+        overflow: visible;
+        padding: 12px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .canvas-container {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Override desktop max-height: 90vh — canvas fills the preview panel
+       height with aspect ratio maintained by width: auto. */
+    canvas {
+        max-width: none;
+        max-height: none;
+        width: auto;
+        height: 100%;
+    }
+
+    .controls-panel {
+        flex: none;
+        width: 100%;
+        padding: 12px;
+        box-shadow: none;
+        border-top: 1px solid #ddd;
+    }
+
+    .stage {
+        padding: 14px;
+        margin-bottom: 14px;
+    }
+
+    /* 6 columns fills mobile width with ~53px swatches — comfortably tappable. */
+    .colour-grid {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 6px;
+    }
+
+    /* font-size: 16px prevents iOS Safari auto-zoom on input focus. */
+    input[type="text"],
+    input[type="date"] {
+        width: 100%;
+        padding: 10px 8px;
+        font-size: 16px;
+        min-height: 44px;
+    }
+
+    select {
+        padding: 10px 4px;
+        font-size: 16px;
+        min-height: 44px;
+    }
+
+    /* No drag cursor on mobile — drag doesn't work without touch handlers. */
+    .canvas-container {
+        cursor: default;
+    }
+
+    /* Hide the drag tip text — not relevant on mobile. */
+    #stage2 p {
+        display: none;
+    }
+
+    input[type="range"] {
+        height: 28px;
+    }
+
+    input[type="color"] {
+        width: 60px;
+        height: 44px;
+        padding: 2px;
+    }
+
+    input[type="file"] {
+        margin: 10px 0;
+        font-size: 14px;
+    }
+
+    #exportBtn {
+        width: 100%;
+        padding: 14px;
+        font-size: 18px;
+        min-height: 44px;
+        margin-top: 8px;
+    }
+}
