@@ -1,6 +1,10 @@
 // Populate the hour select (1–12)
 (function() {
     const sel = document.getElementById('showHour');
+    const blank = document.createElement('option');
+    blank.value = '';
+    blank.textContent = '--';
+    sel.appendChild(blank);
     for (let h = 1; h <= 12; h++) {
         const opt = document.createElement('option');
         opt.value = String(h);
@@ -93,23 +97,6 @@ async function loadConfig() {
         document.getElementById('yPosSlider').min = config.controls.position.min;
         document.getElementById('yPosSlider').max = config.controls.position.max;
         document.getElementById('yPosSlider').value = config.controls.position.default;
-
-        // Set initial datetime to now, rounded to nearest 15 minutes
-        const now = new Date();
-        const roundedMins = Math.round(now.getMinutes() / 15) * 15;
-        now.setMinutes(roundedMins, 0, 0);
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const h24 = parseInt(hours);
-        const h12 = h24 === 0 ? 12 : h24 > 12 ? h24 - 12 : h24;
-        const ampm = h24 < 12 ? 'AM' : 'PM';
-        document.getElementById('showDateOnly').value = `${year}-${month}-${day}`;
-        document.getElementById('showHour').value = String(h12);
-        document.getElementById('showMinute').value = minutes;
-        document.getElementById('showAmPm').value = ampm;
 
         loadTitleImage();
         loadTitleImage2();
@@ -599,7 +586,7 @@ function redrawCanvas() {
         ctx.font = `20pt ${dateTimeFont}`;
         ctx.fillStyle = activeTextColor;
         ctx.textBaseline = 'bottom';
-        const margin = 30;
+        const margin = 35;
         const bottomY = CANVAS_HEIGHT - margin;
 
         ctx.textAlign = 'left';
