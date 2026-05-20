@@ -9,6 +9,24 @@ function loadPaperEffectImage() {
     };
 }
 
+function loadTracklistFlower() {
+    tracklistFlowerImage = new Image();
+    tracklistFlowerImage.onload = function() { redrawCanvas(); };
+    tracklistFlowerImage.src = 'assets/drawings/flower.svg';
+}
+
+function loadTracklistDecorationLeft(filename) {
+    tracklistDecorationLeftImage = new Image();
+    tracklistDecorationLeftImage.onload = function() { redrawCanvas(); };
+    tracklistDecorationLeftImage.src = 'assets/drawings/' + encodeURIComponent(filename);
+}
+
+function loadTracklistDecorationRight(filename) {
+    tracklistDecorationRightImage = new Image();
+    tracklistDecorationRightImage.onload = function() { redrawCanvas(); };
+    tracklistDecorationRightImage.src = 'assets/drawings/' + encodeURIComponent(filename);
+}
+
 function loadDrawingImage(filename) {
     drawingImage = new Image();
     drawingImage.onload = function() { redrawCanvas(); };

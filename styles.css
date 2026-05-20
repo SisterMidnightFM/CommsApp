@@ -300,6 +300,31 @@ canvas {
     color: #333;
 }
 
+/* Tracklist input rows */
+.tracklist-header-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-size: 0.8em;
+    opacity: 0.6;
+}
+
+.tracklist-header-row span {
+    flex: 1;
+}
+
+.tracklist-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.tracklist-row input {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+}
+
 /* Range value display */
 .range-value {
     display: inline-block;

@@ -24,17 +24,18 @@ function getShowDateValue() {
 }
 
 function onShowDateTimeChange() {
+    const dateVal = document.getElementById('showDateOnly').value;
+    if (!dateVal) return;
     const value = getShowDateValue();
-    if (!value) return;
-    const date = new Date(value);
-    const options = {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    };
-    settings.showDate = date.toLocaleDateString('en-US', options);
+    if (value) {
+        const date = new Date(value);
+        settings.showDate = date.toLocaleDateString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        });
+    } else {
+        settings.showDate = dateVal;
+    }
     updateFileName();
     redrawCanvas();
 }

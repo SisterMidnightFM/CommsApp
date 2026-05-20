@@ -29,6 +29,10 @@
                         <img src="assets/SMFM art template Example.png" alt="SMFM art template example">
                         <span>SMFM art template</span>
                     </div>
+                    <div class="mode-card" id="modeTracklist">
+                        <img src="assets/Tracklist Asset Example.png" alt="Tracklist example">
+                        <span>Tracklist</span>
+                    </div>
                 </div>
             </div>
 
@@ -138,12 +142,20 @@
                 <label for="showName">Show Name:</label>
                 <input type="text" id="showName" placeholder="Enter show name">
 
-                <label for="artistName">Artist Name (optional):</label>
-                <input type="text" id="artistName" placeholder="Artist name">
+                <div id="artistNameSection">
+                    <label for="artistName">Artist Name (optional):</label>
+                    <input type="text" id="artistName" placeholder="Artist name">
+                </div>
+
+                <div id="tracklistDecorationsSection" class="hidden">
+                    <button id="randomiseDrawingsBtn">Randomise Drawings</button>
+                    <button id="hideDrawingsBtn">Hide Drawings</button>
+                </div>
 
                 <div id="dateTimeFields" class="hidden">
                     <label for="showDateOnly">Show Date:</label>
                     <input type="date" id="showDateOnly">
+                    <div id="showTimeSection">
                     <label>Show Time:</label>
                     <div class="time-picker">
                         <select id="showHour"></select>
@@ -171,8 +183,25 @@
                         <option value="150">2 hours 30 minutes</option>
                         <option value="180">3 hours</option>
                     </select>
+                    </div>
                 </div>
 
+            </div>
+
+            <!-- Tracklist input (Tracklist mode only) -->
+            <div class="stage hidden" id="stageTracklist">
+                <div class="stage-title">Stage 4: Tracklist</div>
+                <p class="stage-description">Enter artists and track titles. A new row appears as you type.</p>
+                <div class="tracklist-header-row">
+                    <span>Track Title</span>
+                    <span>Artist</span>
+                </div>
+                <div id="tracklistRows">
+                    <div class="tracklist-row">
+                        <input type="text" class="tracklist-track" placeholder="Track Title">
+                        <input type="text" class="tracklist-artist" placeholder="Artist">
+                    </div>
+                </div>
             </div>
 
             <!-- Stage 4: Choose Colour (Artist Image mode only) -->

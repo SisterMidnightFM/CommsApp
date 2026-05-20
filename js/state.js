@@ -11,6 +11,9 @@ let titleImage = null;
 let titleImage2 = null;
 let paperEffectImage = null;
 let drawingImage = null;
+let tracklistFlowerImage = null;
+let tracklistDecorationLeftImage = null;
+let tracklistDecorationRightImage = null;
 const paperEffectEnabled = true;
 
 const DRAWINGS = [
@@ -37,4 +40,8 @@ const settings = {
     smfmBgColor: '#e7dfd9',
     smfmDrawing: null,
     drawingScale: 1.0,
+    tracklistItems: [],
+    tracklistDrawingLeft: null,
+    tracklistDrawingRight: null,
+    tracklistDrawingsHidden: false,
 };

@@ -26,6 +26,7 @@ async function loadConfig() {
         loadTitleImage();
         loadTitleImage2();
         loadPaperEffectImage();
+        loadTracklistFlower();
 
         initializeCanvas();
         updateFileName();
@@ -143,6 +144,39 @@ document.getElementById('exportBtn').addEventListener('click', function() {
         console.error("Export setup error:", err);
         document.getElementById('exportStatus').textContent = "Error setting up export: " + err.message;
     }
+});
+
+// Tracklist row management
+function updateTracklistState() {
+    settings.tracklistItems = [];
+    document.querySelectorAll('#tracklistRows .tracklist-row').forEach(function(row) {
+        settings.tracklistItems.push({
+            artist: row.querySelector('.tracklist-artist').value,
+            track: row.querySelector('.tracklist-track').value,
+        });
+    });
+}
+
+function addTracklistRow() {
+    const container = document.getElementById('tracklistRows');
+    const row = document.createElement('div');
+    row.className = 'tracklist-row';
+    row.innerHTML =
+        '<input type="text" class="tracklist-track" placeholder="Track Title">' +
+        '<input type="text" class="tracklist-artist" placeholder="Artist">';
+    container.appendChild(row);
+}
+
+document.getElementById('tracklistRows').addEventListener('input', function(e) {
+    if (!e.target.matches('.tracklist-artist, .tracklist-track')) return;
+    updateTracklistState();
+
+    const rows = document.querySelectorAll('#tracklistRows .tracklist-row');
+    const lastRow = rows[rows.length - 1];
+    const lastHasContent = Array.from(lastRow.querySelectorAll('input')).some(function(i) { return i.value.trim(); });
+    if (lastHasContent) addTracklistRow();
+
+    redrawCanvas();
 });
 
 loadConfig();
