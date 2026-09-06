@@ -113,37 +113,114 @@ document.getElementById('showLength').addEventListener('change', function(e) {
 });
 
 // Export
-document.getElementById('exportBtn').addEventListener('click', function() {
-    try {
-        const exportStatus = document.getElementById('exportStatus');
-        exportStatus.textContent = "Preparing download...";
+function setExportStatus(message, clearAfter) {
+    const exportStatus = document.getElementById('exportStatus');
+    exportStatus.textContent = message;
+    if (clearAfter) {
+        setTimeout(() => {
+            if (exportStatus.textContent === message) exportStatus.textContent = "";
+        }, clearAfter);
+    }
+}
 
-        if (!titleImage || !titleImage.complete) {
-            exportStatus.textContent = "Error: Title image not loaded. Try again.";
-            return;
+function getExportFileName() {
+    return (document.getElementById('fileName').value || "image") + '.png';
+}
+
+// Canvas -> Blob. Blobs are far more reliable than data URLs on mobile, where
+// multi-megabyte data: URLs are often silently dropped by the browser.
+function getCanvasBlob(onBlob, onError) {
+    if (!titleImage || !titleImage.complete) {
+        onError(new Error("Title image not loaded. Try again."));
+        return;
+    }
+    try {
+        canvas.toBlob(function(blob) {
+            if (blob) {
+                onBlob(blob);
+            } else {
+                onError(new Error("Could not generate the image."));
+            }
+        }, 'image/png');
+    } catch (err) {
+        onError(err);
+    }
+}
+
+document.getElementById('exportBtn').addEventListener('click', function() {
+    setExportStatus("Preparing download...");
+
+    getCanvasBlob(function(blob) {
+        const fileName = getExportFileName();
+
+        // On mobile the share sheet ("Save Image" / "Save to Photos") is the only
+        // reliable way to get a file onto the device, so prefer it when available.
+        if (navigator.canShare && navigator.share) {
+            let file = null;
+            try {
+                file = new File([blob], fileName, { type: 'image/png' });
+            } catch (err) {
+                file = null;
+            }
+            if (file && navigator.canShare({ files: [file] })) {
+                navigator.share({ files: [file] })
+                    .then(() => setExportStatus("Image saved or shared!", 3000))
+                    .catch((err) => {
+                        if (err && err.name === 'AbortError') {
+                            setExportStatus("");
+                        } else {
+                            downloadBlob(blob, fileName);
+                        }
+                    });
+                return;
+            }
         }
 
-        const fileName = document.getElementById('fileName').value || "image";
-        const link = document.createElement('a');
-        link.download = fileName + '.png';
+        downloadBlob(blob, fileName);
+    }, function(err) {
+        console.error("Export error:", err);
+        setExportStatus("Error exporting: " + err.message);
+    });
+});
 
-        setTimeout(() => {
-            try {
-                link.href = canvas.toDataURL('image/png');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                exportStatus.textContent = "Download complete!";
-                setTimeout(() => { exportStatus.textContent = ""; }, 3000);
-            } catch (err) {
-                console.error("Export error:", err);
-                exportStatus.textContent = "Error exporting: " + err.message;
-            }
-        }, 100);
-    } catch (err) {
-        console.error("Export setup error:", err);
-        document.getElementById('exportStatus').textContent = "Error setting up export: " + err.message;
-    }
+function downloadBlob(blob, fileName) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.rel = 'noopener';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    // Give the browser time to start the download before dropping the object URL.
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    setExportStatus("Download started. If nothing happened, use \u201cOpen Image in New Tab\u201d below.", 8000);
+}
+
+// Backup for browsers (mainly older mobile Safari) that ignore the download attribute.
+document.getElementById('openTabBtn').addEventListener('click', function() {
+    // The tab must be opened synchronously inside the click handler, otherwise
+    // popup blockers reject it once toBlob's callback fires.
+    const newTab = window.open('', '_blank');
+
+    setExportStatus("Opening image...");
+
+    getCanvasBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        if (newTab && !newTab.closed) {
+            newTab.location.href = url;
+            setExportStatus("Image opened in a new tab \u2014 press and hold it to save.", 8000);
+        } else {
+            // Popup blocked: fall back to navigating this tab.
+            setExportStatus("Pop-up blocked \u2014 opening the image here instead. Use the back button to return.", 8000);
+            window.location.href = url;
+        }
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+    }, function(err) {
+        console.error("Open in new tab error:", err);
+        if (newTab && !newTab.closed) newTab.close();
+        setExportStatus("Error opening image: " + err.message);
+    });
 });
 
 // Tracklist row management

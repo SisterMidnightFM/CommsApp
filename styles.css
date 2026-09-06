@@ -157,6 +157,22 @@ button:hover {
     background-color: #45a049;
 }
 
+.secondary-btn {
+    background-color: #6b7a8f;
+    margin-top: 8px;
+}
+
+.secondary-btn:hover {
+    background-color: #5b697c;
+}
+
+.export-hint {
+    margin: 8px 0 0;
+    font-size: 13px;
+    line-height: 1.4;
+    opacity: 0.75;
+}
+
 label {
     display: block;
     margin: 8px 0 4px;
@@ -445,7 +461,8 @@ canvas {
         font-size: 14px;
     }
 
-    #exportBtn {
+    #exportBtn,
+    #openTabBtn {
         width: 100%;
         padding: 14px;
         font-size: 18px;
